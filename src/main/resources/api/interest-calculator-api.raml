@@ -1,0 +1,133 @@
+#%RAML 1.0
+title: interest-calculator-api
+version: v1
+mediaType: application/json
+protocols: [ HTTP ]
+
+description: |
+  API to calculate Simple Interest and Compound Interest.
+
+/simple-interest:
+  post:
+    description: Calculate Simple Interest
+    body:
+      application/json:
+        type: SimpleInterestRequest
+        example:
+          {
+            "principal": 10000,
+            "rate": 5,
+            "time": 2
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            type: SimpleInterestResponse
+            example:
+              {
+                "principal": 10000,
+                "rate": 5,
+                "time": 2,
+                "simpleInterest": 1000,
+                "totalAmount": 11000
+              }
+      400:
+        body:
+          application/json:
+            type: ErrorResponse
+
+/compound-interest:
+  post:
+    description: Calculate Compound Interest
+    body:
+      application/json:
+        type: CompoundInterestRequest
+        example:
+          {
+            "principal": 10000,
+            "rate": 5,
+            "time": 2,
+            "frequency": 1
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            type: CompoundInterestResponse
+            example:
+              {
+                "principal": 10000,
+                "rate": 5,
+                "time": 2,
+                "frequency": 1,
+                "compoundInterest": 1025,
+                "totalAmount": 11025
+              }
+      400:
+        body:
+          application/json:
+            type: ErrorResponse
+
+types:
+
+  SimpleInterestRequest:
+    type: object
+    properties:
+      principal:
+        type: number
+        minimum: 1
+        required: true
+      rate:
+        type: number
+        minimum: 0.1
+        required: true
+      time:
+        type: number
+        minimum: 1
+        required: true
+
+  SimpleInterestResponse:
+    type: object
+    properties:
+      principal: number
+      rate: number
+      time: number
+      simpleInterest: number
+      totalAmount: number
+
+  CompoundInterestRequest:
+    type: object
+    properties:
+      principal:
+        type: number
+        minimum: 1
+        required: true
+      rate:
+        type: number
+        minimum: 0.1
+        required: true
+      time:
+        type: number
+        minimum: 1
+        required: true
+      frequency:
+        type: number
+        minimum: 1
+        required: true
+
+  CompoundInterestResponse:
+    type: object
+    properties:
+      principal: number
+      rate: number
+      time: number
+      frequency: number
+      compoundInterest: number
+      totalAmount: number
+
+  ErrorResponse:
+    type: object
+    properties:
+      error: string
+      message: string
