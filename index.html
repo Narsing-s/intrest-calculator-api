@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <title>Interest Calculator</title>
 </head>
@@ -9,17 +8,9 @@
 
 <h2>Interest Calculator</h2>
 
-<select id="type">
-<option value="simple-interest">Simple Interest</option>
-<option value="compound-interest">Compound Interest</option>
-</select>
-
-<br><br>
-
 <input id="principal" placeholder="Principal"><br><br>
 <input id="rate" placeholder="Rate"><br><br>
 <input id="time" placeholder="Time"><br><br>
-<input id="frequency" placeholder="Frequency (compound only)"><br><br>
 
 <button onclick="calculate()">Calculate</button>
 
@@ -29,16 +20,13 @@
 
 async function calculate(){
 
-let type=document.getElementById("type").value;
-
 let data={
 principal:Number(document.getElementById("principal").value),
 rate:Number(document.getElementById("rate").value),
-time:Number(document.getElementById("time").value),
-frequency:Number(document.getElementById("frequency").value)
+time:Number(document.getElementById("time").value)
 }
 
-let response=await fetch("/"+type,{
+let res=await fetch("/simple-interest",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -46,7 +34,7 @@ headers:{
 body:JSON.stringify(data)
 })
 
-let result=await response.json()
+let result=await res.json()
 
 document.getElementById("result").innerText=JSON.stringify(result,null,2)
 
@@ -55,5 +43,4 @@ document.getElementById("result").innerText=JSON.stringify(result,null,2)
 </script>
 
 </body>
-
 </html>
