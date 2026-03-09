@@ -2,9 +2,9 @@
   "name": "interest-calculator-frontend",
   "version": "1.0.0",
   "description": "Node.js frontend for MuleSoft interest calculator API",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
