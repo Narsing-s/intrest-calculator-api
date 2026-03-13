@@ -6,115 +6,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index,follow" />
   <meta name="description" content="Calculate simple and compound interest with a fast, mobile-friendly web app. Privacy-friendly, no auth required." />
-
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      color: var(--text, #eef3ff);
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;color:var(--text,#eef3ff);
       background:
         radial-gradient(1100px 600px at -10% -30%, #1b2b65 0%, transparent 55%),
         radial-gradient(800px 500px at 110% -10%, #142b52 0%, transparent 55%),
-        linear-gradient(180deg, var(--bg, #0b1020) 0%, var(--bg2, #0e1530) 100%);
-      font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
-      -webkit-font-smoothing: antialiased;
-      padding: 16px;
+        linear-gradient(180deg, var(--bg,#0b1020) 0%, var(--bg2,#0e1530) 100%);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans";
+      -webkit-font-smoothing:antialiased; padding:16px
     }
-    :root {
+    :root{
       --bg:#0b1020; --bg2:#0e1530; --card:#121a2f; --text:#eef3ff; --muted:#9aa7cc;
       --accent:#4ae387; --accent2:#5aa1ff; --danger:#ff7a7a;
       --shadow:0 20px 40px rgba(0,0,0,.45); --ring:0 0 0 3px rgba(74,227,135,.25);
-      --radius:16px; --radius-sm:12px;
-      --gap: 14px;
-      --field-height: 48px;
+      --radius:16px; --radius-sm:12px; --gap:14px; --field-h:48px
     }
     [data-theme="light"]{
-      --bg:#eef2ff; --bg2:#f7f9ff; --card:#ffffff; --text:#0e1440; --muted:#5a648a;
+      --bg:#eef2ff; --bg2:#f7f9ff; --card:#fff; --text:#0e1440; --muted:#5a648a;
       --accent:#2fb171; --accent2:#2a62ff; --danger:#d93025;
-      --shadow:0 16px 32px rgba(0,0,0,.08); --ring:0 0 0 3px rgba(42,98,255,.18);
+      --shadow:0 16px 32px rgba(0,0,0,.08); --ring:0 0 0 3px rgba(42,98,255,.18)
     }
 
-    .appbar {
-      max-width: 980px; margin: 0 auto 16px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    }
-    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-    .logo { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 6px 16px rgba(0,0,0,.25); flex: 0 0 auto; }
-    .brand h1 { margin: 0; font-size: 20px; }
-    .brand small { color: var(--muted); display: block; margin-top: 2px; }
-
-    .theme-toggle{display:inline-flex; align-items:center; gap:10px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); cursor:pointer}
+    .appbar{max-width:980px;margin:0 auto 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    .brand h1{margin:0;font-size:20px}
+    .brand small{color:var(--muted)}
+    .theme-toggle{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);cursor:pointer}
     .theme-toggle input{display:none}
-    .knob{width:44px; height:24px; border-radius:999px; background:#172048; border:1px solid rgba(255,255,255,.16); position:relative}
-    .knob::after{content:""; position:absolute; top:50%; left:3px; transform:translateY(-50%); width:18px; height:18px; border-radius:50%; background:var(--accent); transition:left .22s ease; box-shadow:0 2px 10px rgba(0,0,0,.25)}
+    .knob{width:44px;height:24px;border-radius:999px;background:#172048;border:1px solid rgba(255,255,255,.16);position:relative}
+    .knob::after{content:"";position:absolute;top:50%;left:3px;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:var(--accent);transition:left .22s ease;box-shadow:0 2px 10px rgba(0,0,0,.25)}
     input:checked + .knob::after{left:23px}
 
-    .wrap { max-width: 980px; margin: 0 auto; display: grid; gap: var(--gap); }
-    .card {
-      background: var(--card); border: 1px solid rgba(255,255,255,.08);
-      border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px;
-      min-width: 0;
-    }
+    .wrap{max-width:980px;margin:0 auto;display:grid;gap:var(--gap)}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;min-width:0}
 
-    .tabs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-    .tab {
-      padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06); color: var(--text); cursor: pointer;
-      user-select: none;
-    }
-    .tab.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; color: #081226; }
+    .tabs{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+    .tab{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer;user-select:none}
+    .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#081226}
 
-    .panel { display: none; }
-    .panel.active { display: block; }
+    .panel{display:none}
+    .panel.active{display:block}
 
-    .grid {
-      display: grid;
-      gap: var(--gap);
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
-      min-width: 0;
-    }
-    .field { grid-column: span 4; min-width: 0; }
-    @media (max-width: 1024px) { .field { grid-column: span 6; } }
-    @media (max-width: 640px)  { .field { grid-column: span 12; } }
+    .grid{display:grid;gap:var(--gap);grid-template-columns:repeat(12,minmax(0,1fr));align-items:start;min-width:0}
+    .field{grid-column:span 4;min-width:0}
+    @media (max-width:1024px){.field{grid-column:span 6}}
+    @media (max-width:640px){.field{grid-column:span 12}}
 
-    label { display: block; font-size: 12px; color: var(--muted); margin: 0 0 6px; }
-    input {
-      width: 100%; height: var(--field-height);
-      padding: 12px 14px; border-radius: 12px;
-      color: var(--text);
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.18);
-      outline: none;
-      min-width: 0;
-    }
-    input:focus { box-shadow: var(--ring); border-color: transparent; }
-    @supports (-webkit-touch-callout: none) { input { font-size: 16px; } }
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    .inwrap{position:relative}
+    input{width:100%;height:var(--field-h);padding:12px 44px 12px 14px;border-radius:12px;color:var(--text);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);outline:none;min-width:0}
+    input:focus{box-shadow:var(--ring);border-color:transparent}
+    .mic{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);cursor:pointer}
+    .mic.recording{background:rgba(255,0,0,.25);border-color:rgba(255,0,0,.35)}
 
-    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-    .btn {
-      padding: 12px 16px; border-radius: 12px; font-weight: 700;
-      border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: var(--text);
-      cursor: pointer; user-select: none;
-    }
-    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; color: #081226; }
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .btn{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#081226}
+    .btn.ghost{background:transparent}
 
-    .result {
-      margin-top: 12px;
-      border: 1px dashed rgba(255,255,255,.16);
-      background: rgba(255,255,255,.04); border-radius: 12px; padding: 14px;
-      white-space: pre-wrap; word-break: break-word;
-      min-height: 44px;
-    }
-    .result.err { color: var(--danger); border-color: rgba(255,0,0,.25); background: rgba(255,0,0,.06); }
+    .result{margin-top:12px;border:1px dashed rgba(255,255,255,.16);background:rgba(255,255,255,.04);border-radius:12px;padding:12px;white-space:pre-wrap;word-break:break-word;min-height:44px}
+    .result.err{color:var(--danger);border-color:rgba(255,0,0,.25);background:rgba(255,0,0,.06)}
 
-    .foot {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: 6px; color: var(--muted); font-size: 13px; gap: 8px; flex-wrap: wrap;
-    }
-    .watermark { color: var(--muted); text-decoration: none; }
-    .watermark:hover { text-decoration: underline; }
+    .jsonbox{margin-top:10px;border:1px solid rgba(255,255,255,.14);border-radius:12px;overflow:hidden}
+    .jsonhdr{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.06);padding:8px 12px;cursor:pointer}
+    .jsonhdr b{font-size:13px}
+    .jsonbody{display:none;max-height:320px;overflow:auto;background:rgba(0,0,0,.25)}
+    .jsonbody pre{margin:0;padding:12px;font-family:ui-monospace,Menlo,Consolas,Monaco,"Courier New",monospace;color:#d7eaff}
+
+    .row{display:grid;gap:10px;grid-template-columns:repeat(12,minmax(0,1fr))}
+    .row .col-6{grid-column:span 6}
+    .row .col-12{grid-column:span 12}
+    @media (max-width:860px){.row .col-6{grid-column:span 12}}
+
+    .foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;color:var(--muted);font-size:13px;gap:8px;flex-wrap:wrap}
+    .watermark{color:var(--muted);text-decoration:none}
+    .watermark:hover{text-decoration:underline}
+    .hint{color:var(--muted);font-size:12px}
+    select, .switch { height: var(--field-h); padding: 8px 12px; border-radius: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18); color: var(--text); }
+    .switch { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; }
   </style>
 </head>
 <body>
@@ -122,12 +95,12 @@
     <div class="brand">
       <div class="logo"></div>
       <div>
-        <h1>Interest Calculator</h1>
-        <small>Simple • Compound • Fast</small>
+        <h1 data-i18n="title">Interest Calculator</h1>
+        <small data-i18n="subtitle">Simple • Compound • Fast</small>
       </div>
     </div>
     <label class="theme-toggle" title="Toggle theme">
-      <span>Theme</span>
+      <span data-i18n="theme">Theme</span>
       <input id="theme" type="checkbox" />
       <span class="knob"></span>
     </label>
@@ -136,69 +109,131 @@
   <main class="wrap">
     <section class="card">
       <div class="tabs">
-        <button id="tabSimple" class="tab active">Simple Interest</button>
-        <button id="tabCompound" class="tab">Compound Interest</button>
+        <button id="tabSimple" class="tab active" data-i18n="tab_simple">Simple Interest</button>
+        <button id="tabCompound" class="tab" data-i18n="tab_compound">Compound Interest</button>
+        <button id="tabSettings" class="tab" data-i18n="tab_settings">Settings</button>
       </div>
 
       <!-- Simple -->
       <div id="panelSimple" class="panel active">
         <div class="grid">
           <div class="field">
-            <label for="p1">Principal</label>
-            <input id="p1" type="number" inputmode="decimal" step="any" placeholder="e.g., 10000" />
+            <label for="p1" data-i18n="principal">Principal</label>
+            <div class="inwrap">
+              <input id="p1" type="number" inputmode="decimal" step="any" placeholder="10000" />
+              <button class="mic" data-mic="p1" title="Speak value">🎤</button>
+            </div>
           </div>
           <div class="field">
-            <label for="r1">Rate (annual %)</label>
-            <input id="r1" type="number" inputmode="decimal" step="any" placeholder="e.g., 8.5" />
+            <label for="r1" data-i18n="rate">Rate (annual %)</label>
+            <div class="inwrap">
+              <input id="r1" type="number" inputmode="decimal" step="any" placeholder="8.5" />
+              <button class="mic" data-mic="r1" title="Speak value">🎤</button>
+            </div>
           </div>
           <div class="field">
-            <label for="t1">Time (years)</label>
-            <input id="t1" type="number" inputmode="decimal" step="any" placeholder="e.g., 3" />
+            <label for="t1" data-i18n="time">Time (years)</label>
+            <div class="inwrap">
+              <input id="t1" type="number" inputmode="decimal" step="any" placeholder="3" />
+              <button class="mic" data-mic="t1" title="Speak value">🎤</button>
+            </div>
           </div>
         </div>
 
         <div class="actions">
-          <button id="calcSimple" class="btn primary">Calculate Simple Interest</button>
-          <button id="clearSimple" class="btn">Clear</button>
+          <button id="calcSimple" class="btn primary" data-i18n="btn_calc_simple">Calculate Simple Interest</button>
+          <button id="clearSimple" class="btn" data-i18n="btn_clear">Clear</button>
+          <button id="speakSimple" class="btn" title="Speak result">🔊</button>
         </div>
 
-        <div id="outSimple" class="result">Result will appear here.</div>
+        <div id="outSimple" class="result" data-i18n-placeholder="result_placeholder">Result will appear here.</div>
+
+        <!-- JSON panel -->
+        <div class="jsonbox" id="jsonSimple">
+          <div class="jsonhdr"><b data-i18n="json_raw">Raw JSON</b><span>▼</span></div>
+          <div class="jsonbody"><pre id="preSimple">{}</pre></div>
+        </div>
       </div>
 
       <!-- Compound -->
       <div id="panelCompound" class="panel">
         <div class="grid">
           <div class="field">
-            <label for="p2">Principal</label>
-            <input id="p2" type="number" inputmode="decimal" step="any" placeholder="e.g., 10000" />
+            <label for="p2" data-i18n="principal">Principal</label>
+            <div class="inwrap">
+              <input id="p2" type="number" inputmode="decimal" step="any" placeholder="10000" />
+              <button class="mic" data-mic="p2" title="Speak value">🎤</button>
+            </div>
           </div>
           <div class="field">
-            <label for="r2">Rate (annual %)</label>
-            <input id="r2" type="number" inputmode="decimal" step="any" placeholder="e.g., 8.5" />
+            <label for="r2" data-i18n="rate">Rate (annual %)</label>
+            <div class="inwrap">
+              <input id="r2" type="number" inputmode="decimal" step="any" placeholder="8.5" />
+              <button class="mic" data-mic="r2" title="Speak value">🎤</button>
+            </div>
           </div>
           <div class="field">
-            <label for="t2">Time (years)</label>
-            <input id="t2" type="number" inputmode="decimal" step="any" placeholder="e.g., 3" />
+            <label for="t2" data-i18n="time">Time (years)</label>
+            <div class="inwrap">
+              <input id="t2" type="number" inputmode="decimal" step="any" placeholder="3" />
+              <button class="mic" data-mic="t2" title="Speak value">🎤</button>
+            </div>
           </div>
           <div class="field">
-            <label for="n2">Compounds per Year (frequency)</label>
-            <input id="n2" type="number" inputmode="numeric" step="1" placeholder="e.g., 4" />
+            <label for="n2" data-i18n="frequency">Compounds per Year (frequency)</label>
+            <div class="inwrap">
+              <input id="n2" type="number" inputmode="numeric" step="1" placeholder="4" />
+              <button class="mic" data-mic="n2" title="Speak value">🎤</button>
+            </div>
           </div>
         </div>
 
         <div class="actions">
-          <button id="calcCompound" class="btn primary">Calculate Compound Interest</button>
-          <button id="clearCompound" class="btn">Clear</button>
+          <button id="calcCompound" class="btn primary" data-i18n="btn_calc_compound">Calculate Compound Interest</button>
+          <button id="clearCompound" class="btn" data-i18n="btn_clear">Clear</button>
+          <button id="speakCompound" class="btn" title="Speak result">🔊</button>
         </div>
 
-        <div id="outCompound" class="result">Result will appear here.</div>
-      </div>
-    </section>
+        <div id="outCompound" class="result" data-i18n-placeholder="result_placeholder">Result will appear here.</div>
 
-    <section class="card">
-      <h3 style="margin:6px 0 8px">How it works</h3>
-      <p><b>Simple:</b> POST <code>/api/simple-interest</code> ← proxy → Mule <code>{ principal, rate, time }</code></p>
-      <p><b>Compound:</b> POST <code>/api/compound-interest</code> ← proxy → Mule <code>{ principal, rate, time, frequency }</code></p>
+        <!-- JSON panel -->
+        <div class="jsonbox" id="jsonCompound">
+          <div class="jsonhdr"><b data-i18n="json_raw">Raw JSON</b><span>▼</span></div>
+          <div class="jsonbody"><pre id="preCompound">{}</pre></div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="panelSettings" class="panel">
+        <div class="row">
+          <div class="col-6">
+            <label data-i18n="lang_label">Language</label>
+            <select id="lang">
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+              <option value="te">తెలుగు</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label data-i18n="voice_label">Voice Output</label>
+            <div class="switch">
+              <input id="ttsToggle" type="checkbox" />
+              <span data-i18n="voice_toggle">Enable text-to-speech</span>
+            </div>
+          </div>
+          <div class="col-6">
+            <label data-i18n="mic_label">Voice Input</label>
+            <div class="switch">
+              <input id="sttToggle" type="checkbox" />
+              <span data-i18n="mic_toggle">Enable microphone input</span>
+            </div>
+            <div class="hint" data-i18n="mic_hint">Requires browser support; best in Chrome.</div>
+          </div>
+          <div class="col-12">
+            <label data-i18n="api_hint">API is proxied via this server. No changes needed.</label>
+          </div>
+        </div>
+      </div>
     </section>
 
     <div class="foot">
@@ -208,137 +243,220 @@
   </main>
 
   <script>
-    // Theme
-    const THEME_KEY = "interest-ui-theme";
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved) document.documentElement.setAttribute("data-theme", saved);
-    const theme = document.getElementById("theme");
-    theme.checked = (document.documentElement.getAttribute("data-theme") === "light");
-    theme.addEventListener("change", () => {
-      const mode = theme.checked ? "light" : "dark";
+    // ---------- i18n ----------
+    const STR = {
+      en: {
+        title:"Interest Calculator", subtitle:"Simple • Compound • Fast", theme:"Theme",
+        tab_simple:"Simple Interest", tab_compound:"Compound Interest", tab_settings:"Settings",
+        principal:"Principal", rate:"Rate (annual %)", time:"Time (years)", frequency:"Compounds per Year (frequency)",
+        btn_calc_simple:"Calculate Simple Interest", btn_calc_compound:"Calculate Compound Interest", btn_clear:"Clear",
+        json_raw:"Raw JSON", result_placeholder:"Result will appear here.",
+        lang_label:"Language", voice_label:"Voice Output", voice_toggle:"Enable text-to-speech",
+        mic_label:"Voice Input", mic_toggle:"Enable microphone input", mic_hint:"Requires browser support; best in Chrome.",
+        api_hint:"API is proxied via this server. No changes needed."
+      },
+      hi: {
+        title:"ब्याज कैलकुलेटर", subtitle:"साधारण • चक्रवृद्धि • तेज़", theme:"थीम",
+        tab_simple:"साधारण ब्याज", tab_compound:"चक्रवृद्धि ब्याज", tab_settings:"सेटिंग्स",
+        principal:"मूलधन", rate:"दर (वार्षिक %)", time:"समय (वर्ष)", frequency:"वर्ष में कितनी बार (फ्रिक्वेंसी)",
+        btn_calc_simple:"साधारण ब्याज निकालें", btn_calc_compound:"चक्रवृद्धि ब्याज निकालें", btn_clear:"साफ़ करें",
+        json_raw:"कच्चा JSON", result_placeholder:"परिणाम यहाँ दिखेगा।",
+        lang_label:"भाषा", voice_label:"आवाज़ आउटपुट", voice_toggle:"टेक्स्ट-टू-स्पीच सक्षम करें",
+        mic_label:"आवाज़ इनपुट", mic_toggle:"माइक्रोफोन इनपुट सक्षम करें", mic_hint:"ब्राउज़र सपोर्ट आवश्यक; Chrome में सबसे अच्छा।",
+        api_hint:"API इस सर्वर के द्वारा प्रॉक्सी की जाती है। बदलाव आवश्यक नहीं।"
+      },
+      te: {
+        title:"వడ్డీ కాల్క్యులేటర్", subtitle:"సాధారణ • సమ్మేళిత • వేగవంతం", theme:"థీమ్",
+        tab_simple:"సాధారణ వడ్డీ", tab_compound:"సమ్మేళిత వడ్డీ", tab_settings:"సెట్టింగ్స్",
+        principal:"ప్రిన్సిపాల్", rate:"రేటు (వార్షిక %)", time:"సమయం (ఏళ్లు)", frequency:"ఏటా ఎన్ని సార్లు (ఫ్రీక్వెన్సీ)",
+        btn_calc_simple:"సాధారణ వడ్డీ గణించండి", btn_calc_compound:"సమ్మేళిత వడ్డీ గణించండి", btn_clear:"క్లీర్",
+        json_raw:"మూల JSON", result_placeholder:"ఫలితం ఇక్కడ కనిపిస్తుంది.",
+        lang_label:"భాష", voice_label:"వాయిస్ ఔట్‌పుట్", voice_toggle:"టెక్స్ట్-టు-స్పీచ్ ప్రారంభించండి",
+        mic_label:"వాయిస్ ఇన్‌పుట్", mic_toggle:"మైక్ ఇన్‌పుట్ ప్రారంభించండి", mic_hint:"బ్రౌజర్ మద్దతు అవసరం; Chrome లో ఉత్తమం.",
+        api_hint:"API ఈ సర్వర్ ద్వారా ప్రాక్సీ చేయబడుతుంది. మార్పులు అవసరం లేదు."
+      }
+    };
+    const $ = (id)=>document.getElementById(id);
+    const setText = (node, txt)=>{ if(node) node.textContent = txt; };
+    function applyI18n(lang){
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        const k = el.getAttribute("data-i18n");
+        if(STR[lang]?.[k]) setText(el, STR[lang][k]);
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+        const k = el.getAttribute("data-i18n-placeholder");
+        if(STR[lang]?.[k]) setText(el, STR[lang][k]);
+      });
+    }
+
+    // ---------- Theme ----------
+    const THEME_KEY="interest-ui-theme";
+    const savedTheme=localStorage.getItem(THEME_KEY);
+    if(savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+    $("theme").checked = (document.documentElement.getAttribute("data-theme")==="light");
+    $("theme").addEventListener("change", ()=>{
+      const mode = $("theme").checked ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", mode);
       localStorage.setItem(THEME_KEY, mode);
     });
 
-    // Tabs
-    const tabSimple = document.getElementById("tabSimple");
-    const tabCompound = document.getElementById("tabCompound");
-    const panelSimple = document.getElementById("panelSimple");
-    const panelCompound = document.getElementById("panelCompound");
-
-    tabSimple.addEventListener("click", () => {
-      tabSimple.classList.add("active"); tabCompound.classList.remove("active");
-      panelSimple.classList.add("active"); panelCompound.classList.remove("active");
-    });
-    tabCompound.addEventListener("click", () => {
-      tabCompound.classList.add("active"); tabSimple.classList.remove("active");
-      panelCompound.classList.add("active"); panelSimple.classList.remove("active");
-    });
-
-    // Helpers
-    function showText(el, text, ok=true) {
-      el.className = ok ? "result" : "result err";
-      el.textContent = text;
+    // ---------- Tabs ----------
+    const tabs = { simple:$("tabSimple"), compound:$("tabCompound"), settings:$("tabSettings") };
+    const panels = { simple:$("panelSimple"), compound:$("panelCompound"), settings:$("panelSettings") };
+    function setTab(name){
+      Object.keys(tabs).forEach(k=>tabs[k].classList.toggle("active", k===name));
+      Object.keys(panels).forEach(k=>panels[k].classList.toggle("active", k===name));
     }
-    function toNum(id) {
-      const v = document.getElementById(id).value.trim();
-      const n = Number(v);
-      return { ok: v !== "" && Number.isFinite(n), num: n, raw: v };
+    tabs.simple.addEventListener("click", ()=>setTab("simple"));
+    tabs.compound.addEventListener("click", ()=>setTab("compound"));
+    tabs.settings.addEventListener("click", ()=>setTab("settings"));
+
+    // ---------- Settings ----------
+    const LANG_KEY="interest-ui-lang"; const TTS_KEY="interest-ui-tts"; const STT_KEY="interest-ui-stt";
+    const lang = localStorage.getItem(LANG_KEY) || "en";
+    $("lang").value = lang;
+    applyI18n(lang);
+    $("lang").addEventListener("change", ()=>{
+      const l = $("lang").value;
+      localStorage.setItem(LANG_KEY, l);
+      applyI18n(l);
+    });
+    $("ttsToggle").checked = localStorage.getItem(TTS_KEY)==="true";
+    $("sttToggle").checked = localStorage.getItem(STT_KEY)==="true";
+    $("ttsToggle").addEventListener("change", ()=>localStorage.setItem(TTS_KEY, $("ttsToggle").checked));
+    $("sttToggle").addEventListener("change", ()=>localStorage.setItem(STT_KEY, $("sttToggle").checked));
+
+    // ---------- Helpers ----------
+    const fmt = (v)=> (v===null||v===undefined||Number.isNaN(Number(v))) ? "(n/a)" : String(v);
+    function showResult(el, text, ok=true){ el.className = ok?"result":"result err"; el.textContent = text; }
+    function setJSON(preEl, obj){ preEl.textContent = (typeof obj==="string")?obj:JSON.stringify(obj,null,2); }
+    function toNum(id){ const v=$(id).value.trim(); const n=Number(v); return { ok:(v!=="")&&Number.isFinite(n), num:n, raw:v }; }
+
+    // Collapsible JSON
+    document.querySelectorAll(".jsonbox").forEach(box=>{
+      const hdr = box.querySelector(".jsonhdr");
+      const body = box.querySelector(".jsonbody");
+      hdr.addEventListener("click", ()=>{
+        const open = body.style.display==="block";
+        body.style.display = open ? "none" : "block";
+        hdr.querySelector("span").textContent = open ? "▼" : "▲";
+      });
+    });
+
+    // ---------- Voice (TTS) ----------
+    function speak(text){
+      if(!$("ttsToggle").checked) return;
+      try{
+        const u = new SpeechSynthesisUtterance(text);
+        const l = $("lang").value;
+        u.lang = (l==="hi")?"hi-IN":(l==="te")?"te-IN":"en-US";
+        speechSynthesis.cancel(); speechSynthesis.speak(u);
+      }catch(e){}
     }
-    const fmt = (v) => (v === null || v === undefined || Number.isNaN(Number(v))) ? "(n/a)" : String(v);
 
-    // Simple Interest
-    document.getElementById("calcSimple").addEventListener("click", async () => {
-      const P = toNum("p1"), R = toNum("r1"), T = toNum("t1");
-      if (!P.ok || !R.ok || !T.ok) return showText(outSimple, "Please enter valid Principal, Rate, and Time.", false);
+    // ---------- Voice (STT) per-field ----------
+    const hasSTT = ("webkitSpeechRecognition" in window) || ("SpeechRecognition" in window);
+    function startDictation(targetId, micBtn){
+      if(!$("sttToggle").checked || !hasSTT){ micBtn.classList.remove("recording"); return; }
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const rec = new SR();
+      rec.lang = ($("lang").value==="hi")?"hi-IN":($("lang").value==="te")?"te-IN":"en-US";
+      rec.interimResults = false; rec.maxAlternatives = 1;
+      micBtn.classList.add("recording");
+      rec.onresult = (ev)=>{
+        const text = ev.results[0][0].transcript || "";
+        const num = parseFloat(text.replace(/[^\d.-]/g,""));
+        if(Number.isFinite(num)) $(targetId).value = String(num);
+      };
+      rec.onerror = ()=>{};
+      rec.onend = ()=>{ micBtn.classList.remove("recording"); };
+      rec.start();
+    }
+    document.querySelectorAll(".mic").forEach(btn=>{
+      const id = btn.getAttribute("data-mic");
+      btn.addEventListener("click", ()=>startDictation(id, btn));
+    });
 
-      try {
+    // ---------- Simple Interest ----------
+    $("calcSimple").addEventListener("click", async ()=>{
+      const P=toNum("p1"), R=toNum("r1"), T=toNum("t1");
+      if(!P.ok||!R.ok||!T.ok){
+        const msg = (STR[lang]?.result_placeholder)||"Result will appear here.";
+        showResult(outSimple, "Please enter valid Principal, Rate, and Time.", false);
+        return;
+      }
+      try{
         const res = await fetch("/api/simple-interest", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ principal: P.num, rate: R.num, time: T.num })
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ principal:P.num, rate:R.num, time:T.num })
         });
         const data = await res.json();
-        if (!res.ok) return showText(outSimple, data.message || data.error || "Request failed", false);
+        setJSON(preSimple, data);
+        if(!res.ok){ showResult(outSimple, data.message||data.error||"Request failed", false); return; }
 
-        if (data && typeof data === "object") {
-          const interest = data.interest ?? data.simpleInterest ?? data.si ?? null;
-          const total = data.total ?? data.amount ?? null;
-          showText(outSimple, `Simple Interest: ${fmt(interest)}\nTotal Amount: ${fmt(total)}`);
-        } else {
-          showText(outSimple, String(data));
+        // derive totals if missing
+        let interest = (data && typeof data==="object") ? (data.interest ?? data.simpleInterest ?? data.si ?? null) : null;
+        let total = (data && typeof data==="object") ? (data.total ?? data.amount ?? data.totalAmount ?? data.finalAmount ?? null) : null;
+        if((total===null||total===undefined) && (interest!==null&&interest!==undefined)){
+          const pNum = Number(P.num), iNum = Number(interest);
+          if(Number.isFinite(pNum) && Number.isFinite(iNum)) total = pNum + iNum;
         }
-      } catch (e) {
-        showText(outSimple, e.message, false);
+        const text = `Simple Interest: ${fmt(interest)}\nTotal Amount: ${fmt(total)}`;
+        showResult(outSimple, text);
+        if($("ttsToggle").checked) speak(text);
+      }catch(e){
+        showResult(outSimple, e.message, false);
       }
     });
-    document.getElementById("clearSimple").addEventListener("click", () => {
-      ["p1","r1","t1"].forEach(id => document.getElementById(id).value = "");
-      showText(outSimple, "Cleared.");
+    $("clearSimple").addEventListener("click", ()=>{
+      ["p1","r1","t1"].forEach(id=>$(id).value="");
+      showResult(outSimple, STR[lang]?.result_placeholder || "Result will appear here.");
+      setJSON(preSimple, {});
     });
+    $("speakSimple").addEventListener("click", ()=> speak(outSimple.textContent||""));
 
-    // Compound Interest (send frequency)
-    document.getElementById("calcCompound").addEventListener("click", async () => {
-      const P = toNum("p2"), R = toNum("r2"), T = toNum("t2"), F = toNum("n2");
-      if (!P.ok || !R.ok || !T.ok || !F.ok) return showText(outCompound, "Please enter Principal, Rate, Time, and Frequency (per year).", false);
-
-      try {
+    // ---------- Compound Interest ----------
+    $("calcCompound").addEventListener("click", async ()=>{
+      const P=toNum("p2"), R=toNum("r2"), T=toNum("t2"), F=toNum("n2");
+      if(!P.ok||!R.ok||!T.ok||!F.ok){
+        showResult(outCompound, "Please enter Principal, Rate, Time, and Frequency (per year).", false);
+        return;
+      }
+      try{
         const res = await fetch("/api/compound-interest", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ principal: P.num, rate: R.num, time: T.num, frequency: F.num })
+          method:"POST", headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ principal:P.num, rate:R.num, time:T.num, frequency:F.num })
         });
         const data = await res.json();
-        if (!res.ok) return showText(outCompound, data.message || data.error || "Request failed", false);
+        setJSON(preCompound, data);
+        if(!res.ok){ showResult(outCompound, data.message||data.error||"Request failed", false); return; }
 
-        // Robust result handling:
-        // 1) Try to read interest/amount from multiple possible keys
-        let interest = null, amount = null;
-
-        if (data && typeof data === "object") {
-          interest =
-            data.interest ??
-            data.compoundInterest ??
-            data.ci ??
-            data.interestAmount ??
-            null;
-
-          amount =
-            data.amount ??
-            data.totalAmount ??
-            data.finalAmount ??
-            data.maturityAmount ??
-            data.total ??
-            data.A ??
-            null;
+        let interest=null, amount=null;
+        if(data && typeof data==="object"){
+          interest = data.interest ?? data.compoundInterest ?? data.ci ?? data.interestAmount ?? null;
+          amount   = data.amount ?? data.totalAmount ?? data.finalAmount ?? data.maturityAmount ?? data.total ?? data.A ?? null;
+        }
+        if((amount===null||amount===undefined) && (interest!==null&&interest!==undefined)){
+          const pNum=Number(P.num), iNum=Number(interest);
+          if(Number.isFinite(pNum)&&Number.isFinite(iNum)) amount = pNum + iNum;
         }
 
-        // 2) If amount is missing but interest exists, compute A = P + interest
-        if ((amount === null || amount === undefined) && (interest !== null && interest !== undefined)) {
-          const pNum = Number(P.num);
-          const iNum = Number(interest);
-          if (Number.isFinite(pNum) && Number.isFinite(iNum)) {
-            amount = pNum + iNum;
-          }
-        }
-
-        const lines = [
-          `Compound Interest: ${fmt(interest)}`,
-          `Final Amount: ${fmt(amount)}`,
-          `Frequency: ${F.num} / year`
-        ];
-        showText(outCompound, lines.join("\n"));
-
-      } catch (e) {
-        showText(outCompound, e.message, false);
+        const text = `Compound Interest: ${fmt(interest)}\nFinal Amount: ${fmt(amount)}\nFrequency: ${F.num} / year`;
+        showResult(outCompound, text);
+        if($("ttsToggle").checked) speak(text);
+      }catch(e){
+        showResult(outCompound, e.message, false);
       }
     });
-    document.getElementById("clearCompound").addEventListener("click", () => {
-      ["p2","r2","t2","n2"].forEach(id => document.getElementById(id).value = "");
-      showText(outCompound, "Cleared.");
+    $("clearCompound").addEventListener("click", ()=>{
+      ["p2","r2","t2","n2"].forEach(id=>$(id).value="");
+      showResult(outCompound, STR[lang]?.result_placeholder || "Result will appear here.");
+      setJSON(preCompound, {});
     });
+    $("speakCompound").addEventListener("click", ()=> speak(outCompound.textContent||""));
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // Footer
+    $("year").textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
