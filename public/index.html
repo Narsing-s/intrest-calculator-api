@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="index,follow" />
   <meta name="description" content="Calculate simple and compound interest with a fast, mobile-friendly web app. Privacy-friendly, no auth required." />
+  <!-- ✅ PWA hooks -->
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="icon" href="/icons/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
   <style>
     *,*::before,*::after{box-sizing:border-box}
     html,body{height:100%}
@@ -232,6 +238,10 @@
           <div class="col-12">
             <label data-i18n="api_hint">API is proxied via this server. No changes needed.</label>
           </div>
+          <!-- ✅ PWA install button (appears only when available) -->
+          <div class="col-12">
+            <button id="installBtn" class="btn" style="display:none">Install App</button>
+          </div>
         </div>
       </div>
     </section>
@@ -381,7 +391,6 @@
     $("calcSimple").addEventListener("click", async ()=>{
       const P=toNum("p1"), R=toNum("r1"), T=toNum("t1");
       if(!P.ok||!R.ok||!T.ok){
-        const msg = (STR[lang]?.result_placeholder)||"Result will appear here.";
         showResult(outSimple, "Please enter valid Principal, Rate, and Time.", false);
         return;
       }
@@ -457,6 +466,30 @@
 
     // Footer
     $("year").textContent = new Date().getFullYear();
+
+    // ---------- PWA: Service worker registration + install prompt ----------
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch(console.error);
+      });
+    }
+    let deferredPrompt = null;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById("installBtn");
+      if (btn) btn.style.display = "inline-flex";
+    });
+    const installBtn = document.getElementById("installBtn");
+    if (installBtn) {
+      installBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) return alert("Install is not available right now.");
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.style.display = "none";
+      });
+    }
   </script>
 </body>
 </html>
