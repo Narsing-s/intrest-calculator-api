@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <title>Interest Calculator — Simple & Compound</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Calculate simple and compound interest with a fast, mobile-friendly web app. Privacy-friendly, no auth required." />
+  <link rel="canonical" href="/" />
+  <meta property="og:title" content="Interest Calculator — Simple & Compound" />
+  <meta property="og:description" content="Calculate simple and compound interest with a fast, mobile-friendly web app." />
+  <meta property="og:type" content="website" />
+  <meta name="robots" content="index,follow" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="appbar">
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>Interest Calculator</h1>
+        <small>Simple • Compound • Fast</small>
+      </div>
+    </div>
+    <label class="theme-toggle" title="Toggle theme">
+      <span>Theme</span>
+      <input id="theme" type="checkbox" />
+      <span class="knob"></span>
+    </label>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <nav class="mode-tabs" role="tablist">
+        <button class="tab active" data-tab="simple">Simple Interest</button>
+        <button class="tab" data-tab="compound">Compound Interest</button>
+      </nav>
+
+      <div id="panel-simple" class="panel active" role="tabpanel" aria-labelledby="simple">
+        <div class="grid-3">
+          <div class="field">
+            <label for="p1">Principal</label>
+            <input id="p1" type="number" step="any" placeholder="e.g., 10000" />
+          </div>
+          <div class="field">
+            <label for="r1">Rate (annual %)</label>
+            <input id="r1" type="number" step="any" placeholder="e.g., 8.5" />
+          </div>
+          <div class="field">
+            <label for="t1">Time (years)</label>
+            <input id="t1" type="number" step="any" placeholder="e.g., 3" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="calcSimple" class="btn primary">Calculate Simple Interest</button>
+          <button id="clearSimple" class="btn">Clear</button>
+        </div>
+
+        <div id="outSimple" class="result"></div>
+      </div>
+
+      <div id="panel-compound" class="panel" role="tabpanel" aria-labelledby="compound">
+        <div class="grid-3">
+          <div class="field">
+            <label for="p2">Principal</label>
+            <input id="p2" type="number" step="any" placeholder="e.g., 10000" />
+          </div>
+          <div class="field">
+            <label for="r2">Rate (annual %)</label>
+            <input id="r2" type="number" step="any" placeholder="e.g., 8.5" />
+          </div>
+          <div class="field">
+            <label for="t2">Time (years)</label>
+            <input id="t2" type="number" step="any" placeholder="e.g., 3" />
+          </div>
+          <div class="field">
+            <label for="n2">Compounds per Year</label>
+            <input id="n2" type="number" step="1" placeholder="e.g., 4" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="calcCompound" class="btn primary">Calculate Compound Interest</button>
+          <button id="clearCompound" class="btn">Clear</button>
+        </div>
+
+        <div id="outCompound" class="result"></div>
+      </div>
+    </section>
+
+    <section class="card note">
+      <h3>How it works</h3>
+      <p><strong>Simple Interest:</strong> Uses <code>POST /api/simple-interest</code> (proxied to Mule) with JSON body <code>{ principal, rate, time }</code>.</p>
+      <p><strong>Compound Interest:</strong> Uses <code>POST /api/compound-interest</code> with <code>{ principal, rate, time, n }</code> where <code>n</code> is compounding periods per year.</p>
+    </section>
+  </main>
+
+  <a class="watermark" href="https://github.com/Narsing-s" target="_blank" rel="noopener" aria-label="Created by Narsing-s">#CreatedByNarsing-s</a>
+
+  <script>
+    // Theme toggle
+    const THEME_KEY = "interest-ui-theme";
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved) document.documentElement.setAttribute("data-theme", saved);
+    const theme = document.getElementById("theme");
+    theme.checked = (document.documentElement.getAttribute("data-theme") === "light");
+    theme.addEventListener("change", () => {
+      const mode = theme.checked ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", mode);
+      localStorage.setItem(THEME_KEY, mode);
+    });
+
+    // Tab switching
+    const tabs = document.querySelectorAll(".tab");
+    tabs.forEach(t => t.addEventListener("click", () => {
+      tabs.forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      const tab = t.getAttribute("data-tab");
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      document.getElementById("panel-" + tab).classList.add("active");
+    }));
+
+    function showOk(el, obj) {
+      el.className = "result ok";
+      el.textContent = JSON.stringify(obj, null, 2);
+    }
+    function showErr(el, msg) {
+      el.className = "result err";
+      el.textContent = msg;
+    }
+    function toNum(id) {
+      const v = document.getElementById(id).value.trim();
+      const n = Number(v);
+      return { raw: v, num: n, ok: v !== "" && Number.isFinite(n) };
+    }
+
+    // Simple Interest
+    document.getElementById("calcSimple").addEventListener("click", async () => {
+      const P = toNum("p1"), R = toNum("r1"), T = toNum("t1");
+      if (!P.ok || !R.ok || !T.ok) return showErr(outSimple, "Please enter valid Principal, Rate (%), and Time (years).");
+
+      try {
+        const res = await fetch("/api/simple-interest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ principal: P.num, rate: R.num, time: T.num })
+        });
+        const data = await res.json();
+        if (!res.ok) return showErr(outSimple, (data.message || data.error || "Request failed"));
+        showOk(outSimple, data);
+      } catch (e) {
+        showErr(outSimple, e.message);
+      }
+    });
+    document.getElementById("clearSimple").addEventListener("click", () => {
+      ["p1","r1","t1"].forEach(id => document.getElementById(id).value = "");
+      showErr(outSimple, "Cleared.");
+    });
+
+    // Compound Interest
+    document.getElementById("calcCompound").addEventListener("click", async () => {
+      const P = toNum("p2"), R = toNum("r2"), T = toNum("t2"), N = toNum("n2");
+      if (!P.ok || !R.ok || !T.ok || !N.ok) return showErr(outCompound, "Please enter valid Principal, Rate (%), Time (years), and Compounds/year.");
+
+      try {
+        const res = await fetch("/api/compound-interest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ principal: P.num, rate: R.num, time: T.num, n: N.num })
+        });
+        const data = await res.json();
+        if (!res.ok) return showErr(outCompound, (data.message || data.error || "Request failed"));
+        showOk(outCompound, data);
+      } catch (e) {
+        showErr(outCompound, e.message);
+      }
+    });
+    document.getElementById("clearCompound").addEventListener("click", () => {
+      ["p2","r2","t2","n2"].forEach(id => document.getElementById(id).value = "");
+      showErr(outCompound, "Cleared.");
+    });
+  </script>
+</body>
+</html>
