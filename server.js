@@ -44,6 +44,7 @@ app.post("/api/simple-interest", async (req, res) => {
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify(req.body),
     });
+
     const text = await upstream.text();
     let data;
     try { data = JSON.parse(text); } catch { data = { raw: text }; }
@@ -53,13 +54,36 @@ app.post("/api/simple-interest", async (req, res) => {
   }
 });
 
+/**
+ * ✅ Compound Interest proxy
+ * - Accepts either 'frequency' or legacy 'n' from the client
+ * - Always forwards 'frequency' to Mule (required by your APIKit flow)
+ */
 app.post("/api/compound-interest", async (req, res) => {
   try {
+    const { principal, rate, time } = req.body || {};
+    const frequency = req.body?.frequency ?? req.body?.n; // map legacy 'n' -> frequency
+
+    // Minimal validation so Mule gets what it needs
+    if (
+      principal === undefined ||
+      rate === undefined ||
+      time === undefined ||
+      frequency === undefined
+    ) {
+      return res.status(400).json({
+        error: "Missing required field(s). Expected { principal, rate, time, frequency }",
+        received: Object.keys(req.body || {}),
+        hint: "You can send 'frequency' or legacy 'n'; the proxy maps 'n' to 'frequency' for Mule."
+      });
+    }
+
     const upstream = await fetch(COMPOUND_API, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify({ principal, rate, time, frequency }),
     });
+
     const text = await upstream.text();
     let data;
     try { data = JSON.parse(text); } catch { data = { raw: text }; }
