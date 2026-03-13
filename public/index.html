@@ -1,143 +1,121 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>Interest Calculator — Simple & Compound</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Calculate simple and compound interest with a fast, mobile-friendly web app. Privacy-friendly, no auth required." />
-  <link rel="canonical" href="/" />
-  <meta property="og:title" content="Interest Calculator — Simple & Compound" />
-  <meta property="og:description" content="Calculate simple and compound interest with a fast, mobile-friendly web app." />
-  <meta property="og:type" content="website" />
-  <meta name="robots" content="index,follow" />
-  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; padding: 20px; background:#0b1020; color:#eef3ff; }
+    h1 { margin: 0 0 6px; }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    .card { background:#121a2f; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px; margin: 14px 0; }
+    .grid { display:grid; gap:10px; grid-template-columns: repeat(12, 1fr); }
+    .field { grid-column: span 4; }
+    label { display:block; font-size:12px; opacity:.8; margin-bottom:4px; }
+    input { width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.06); color:#eef3ff; }
+    .actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    button { padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.08); color:#eef3ff; cursor:pointer; }
+    button.primary { background:linear-gradient(135deg, #4ae387, #5aa1ff); border:none; color:#081226; }
+    pre { background:rgba(255,255,255,.06); border:1px dashed rgba(255,255,255,.16); padding:12px; border-radius:10px; white-space:pre-wrap; word-break:break-word; }
+    .tabs { display:flex; gap:8px; margin-top:8px; }
+    .tab { padding:8px 12px; border-radius:999px; border:1px solid rgba(255,255,255,.18); cursor:pointer; }
+    .tab.active { background:linear-gradient(135deg, #4ae387, #5aa1ff); border:none; color:#081226; }
+    .muted { opacity:.8; font-size:13px; }
+  </style>
 </head>
 <body>
-  <header class="appbar">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <h1>Interest Calculator</h1>
-        <small>Simple • Compound • Fast</small>
-      </div>
+  <div class="wrap">
+    <h1>Interest Calculator</h1>
+    <div class="muted">Simple & Compound • Fast • Clean</div>
+
+    <div class="tabs">
+      <div id="tabSimple" class="tab active">Simple Interest</div>
+      <div id="tabCompound" class="tab">Compound Interest</div>
     </div>
-    <label class="theme-toggle" title="Toggle theme">
-      <span>Theme</span>
-      <input id="theme" type="checkbox" />
-      <span class="knob"></span>
-    </label>
-  </header>
 
-  <main class="wrap">
-    <section class="card">
-      <nav class="mode-tabs" role="tablist">
-        <button class="tab active" data-tab="simple">Simple Interest</button>
-        <button class="tab" data-tab="compound">Compound Interest</button>
-      </nav>
-
-      <div id="panel-simple" class="panel active" role="tabpanel" aria-labelledby="simple">
-        <div class="grid-3">
-          <div class="field">
-            <label for="p1">Principal</label>
-            <input id="p1" type="number" step="any" placeholder="e.g., 10000" />
-          </div>
-          <div class="field">
-            <label for="r1">Rate (annual %)</label>
-            <input id="r1" type="number" step="any" placeholder="e.g., 8.5" />
-          </div>
-          <div class="field">
-            <label for="t1">Time (years)</label>
-            <input id="t1" type="number" step="any" placeholder="e.g., 3" />
-          </div>
+    <div id="simpleCard" class="card">
+      <div class="grid">
+        <div class="field">
+          <label for="p1">Principal</label>
+          <input id="p1" type="number" step="any" placeholder="e.g., 10000" />
         </div>
-
-        <div class="actions">
-          <button id="calcSimple" class="btn primary">Calculate Simple Interest</button>
-          <button id="clearSimple" class="btn">Clear</button>
+        <div class="field">
+          <label for="r1">Rate (annual %)</label>
+          <input id="r1" type="number" step="any" placeholder="e.g., 8.5" />
         </div>
-
-        <div id="outSimple" class="result"></div>
+        <div class="field">
+          <label for="t1">Time (years)</label>
+          <input id="t1" type="number" step="any" placeholder="e.g., 3" />
+        </div>
       </div>
-
-      <div id="panel-compound" class="panel" role="tabpanel" aria-labelledby="compound">
-        <div class="grid-3">
-          <div class="field">
-            <label for="p2">Principal</label>
-            <input id="p2" type="number" step="any" placeholder="e.g., 10000" />
-          </div>
-          <div class="field">
-            <label for="r2">Rate (annual %)</label>
-            <input id="r2" type="number" step="any" placeholder="e.g., 8.5" />
-          </div>
-          <div class="field">
-            <label for="t2">Time (years)</label>
-            <input id="t2" type="number" step="any" placeholder="e.g., 3" />
-          </div>
-          <div class="field">
-            <label for="n2">Compounds per Year</label>
-            <input id="n2" type="number" step="1" placeholder="e.g., 4" />
-          </div>
-        </div>
-
-        <div class="actions">
-          <button id="calcCompound" class="btn primary">Calculate Compound Interest</button>
-          <button id="clearCompound" class="btn">Clear</button>
-        </div>
-
-        <div id="outCompound" class="result"></div>
+      <div class="actions">
+        <button id="calcSimple" class="primary">Calculate Simple Interest</button>
+        <button id="clearSimple">Clear</button>
       </div>
-    </section>
+      <pre id="outSimple">Result will appear here.</pre>
+    </div>
 
-    <section class="card note">
-      <h3>How it works</h3>
-      <p><strong>Simple Interest:</strong> Uses <code>POST /api/simple-interest</code> (proxied to Mule) with JSON body <code>{ principal, rate, time }</code>.</p>
-      <p><strong>Compound Interest:</strong> Uses <code>POST /api/compound-interest</code> with <code>{ principal, rate, time, n }</code> where <code>n</code> is compounding periods per year.</p>
-    </section>
-  </main>
+    <div id="compoundCard" class="card" style="display:none">
+      <div class="grid">
+        <div class="field">
+          <label for="p2">Principal</label>
+          <input id="p2" type="number" step="any" placeholder="e.g., 10000" />
+        </div>
+        <div class="field">
+          <label for="r2">Rate (annual %)</label>
+          <input id="r2" type="number" step="any" placeholder="e.g., 8.5" />
+        </div>
+        <div class="field">
+          <label for="t2">Time (years)</label>
+          <input id="t2" type="number" step="any" placeholder="e.g., 3" />
+        </div>
+        <div class="field">
+          <label for="n2">Compounds per Year</label>
+          <input id="n2" type="number" step="1" placeholder="e.g., 4" />
+        </div>
+      </div>
+      <div class="actions">
+        <button id="calcCompound" class="primary">Calculate Compound Interest</button>
+        <button id="clearCompound">Clear</button>
+      </div>
+      <pre id="outCompound">Result will appear here.</pre>
+    </div>
 
-  <a class="watermark" href="https://github.com/Narsing-s" target="_blank" rel="noopener" aria-label="Created by Narsing-s">#CreatedByNarsing-s</a>
+    <p class="muted">© <span id="year"></span> #CreatedByNarsing-s</p>
+  </div>
 
   <script>
-    // Theme toggle
-    const THEME_KEY = "interest-ui-theme";
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved) document.documentElement.setAttribute("data-theme", saved);
-    const theme = document.getElementById("theme");
-    theme.checked = (document.documentElement.getAttribute("data-theme") === "light");
-    theme.addEventListener("change", () => {
-      const mode = theme.checked ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", mode);
-      localStorage.setItem(THEME_KEY, mode);
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Tabs
+    const tabSimple = document.getElementById("tabSimple");
+    const tabCompound = document.getElementById("tabCompound");
+    const simpleCard = document.getElementById("simpleCard");
+    const compoundCard = document.getElementById("compoundCard");
+    tabSimple.addEventListener("click", () => {
+      tabSimple.classList.add("active"); tabCompound.classList.remove("active");
+      simpleCard.style.display = ""; compoundCard.style.display = "none";
+    });
+    tabCompound.addEventListener("click", () => {
+      tabCompound.classList.add("active"); tabSimple.classList.remove("active");
+      compoundCard.style.display = ""; simpleCard.style.display = "none";
     });
 
-    // Tab switching
-    const tabs = document.querySelectorAll(".tab");
-    tabs.forEach(t => t.addEventListener("click", () => {
-      tabs.forEach(x => x.classList.remove("active"));
-      t.classList.add("active");
-      const tab = t.getAttribute("data-tab");
-      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-      document.getElementById("panel-" + tab).classList.add("active");
-    }));
-
-    function showOk(el, obj) {
-      el.className = "result ok";
-      el.textContent = JSON.stringify(obj, null, 2);
-    }
-    function showErr(el, msg) {
-      el.className = "result err";
-      el.textContent = msg;
+    // Helpers
+    function show(el, text, ok=true) {
+      el.textContent = text;
+      el.style.color = ok ? "#eef3ff" : "#ff7a7a";
     }
     function toNum(id) {
       const v = document.getElementById(id).value.trim();
       const n = Number(v);
-      return { raw: v, num: n, ok: v !== "" && Number.isFinite(n) };
+      return { ok: v !== "" && Number.isFinite(n), num: n, raw: v };
     }
 
     // Simple Interest
     document.getElementById("calcSimple").addEventListener("click", async () => {
       const P = toNum("p1"), R = toNum("r1"), T = toNum("t1");
-      if (!P.ok || !R.ok || !T.ok) return showErr(outSimple, "Please enter valid Principal, Rate (%), and Time (years).");
+      if (!P.ok || !R.ok || !T.ok) return show(outSimple, "Please enter valid Principal, Rate, and Time.", false);
 
       try {
         const res = await fetch("/api/simple-interest", {
@@ -146,21 +124,21 @@
           body: JSON.stringify({ principal: P.num, rate: R.num, time: T.num })
         });
         const data = await res.json();
-        if (!res.ok) return showErr(outSimple, (data.message || data.error || "Request failed"));
-        showOk(outSimple, data);
+        if (!res.ok) return show(outSimple, data.message || data.error || "Request failed", false);
+        show(outSimple, JSON.stringify(data, null, 2));
       } catch (e) {
-        showErr(outSimple, e.message);
+        show(outSimple, e.message, false);
       }
     });
     document.getElementById("clearSimple").addEventListener("click", () => {
       ["p1","r1","t1"].forEach(id => document.getElementById(id).value = "");
-      showErr(outSimple, "Cleared.");
+      show(outSimple, "Cleared.");
     });
 
     // Compound Interest
     document.getElementById("calcCompound").addEventListener("click", async () => {
       const P = toNum("p2"), R = toNum("r2"), T = toNum("t2"), N = toNum("n2");
-      if (!P.ok || !R.ok || !T.ok || !N.ok) return showErr(outCompound, "Please enter valid Principal, Rate (%), Time (years), and Compounds/year.");
+      if (!P.ok || !R.ok || !T.ok || !N.ok) return show(outCompound, "Please enter valid Principal, Rate, Time, and n (per year).", false);
 
       try {
         const res = await fetch("/api/compound-interest", {
@@ -169,15 +147,15 @@
           body: JSON.stringify({ principal: P.num, rate: R.num, time: T.num, n: N.num })
         });
         const data = await res.json();
-        if (!res.ok) return showErr(outCompound, (data.message || data.error || "Request failed"));
-        showOk(outCompound, data);
+        if (!res.ok) return show(outCompound, data.message || data.error || "Request failed", false);
+        show(outCompound, JSON.stringify(data, null, 2));
       } catch (e) {
-        showErr(outCompound, e.message);
+        show(outCompound, e.message, false);
       }
     });
     document.getElementById("clearCompound").addEventListener("click", () => {
       ["p2","r2","t2","n2"].forEach(id => document.getElementById(id).value = "");
-      showErr(outCompound, "Cleared.");
+      show(outCompound, "Cleared.");
     });
   </script>
 </body>
