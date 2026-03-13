@@ -7,9 +7,7 @@
   <meta name="robots" content="index,follow" />
   <meta name="description" content="Calculate simple and compound interest with a fast, mobile-friendly web app. Privacy-friendly, no auth required." />
 
-  <!-- Inline CSS for simplicity (you can move to /public/style.css) -->
   <style>
-    /* --- Reset & base --- */
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; }
     body {
@@ -28,7 +26,7 @@
       --accent:#4ae387; --accent2:#5aa1ff; --danger:#ff7a7a;
       --shadow:0 20px 40px rgba(0,0,0,.45); --ring:0 0 0 3px rgba(74,227,135,.25);
       --radius:16px; --radius-sm:12px;
-      --gap: 14px; --gap-sm: 10px;
+      --gap: 14px;
       --field-height: 48px;
     }
     [data-theme="light"]{
@@ -37,7 +35,6 @@
       --shadow:0 16px 32px rgba(0,0,0,.08); --ring:0 0 0 3px rgba(42,98,255,.18);
     }
 
-    /* --- Layout wrappers --- */
     .appbar {
       max-width: 980px; margin: 0 auto 16px;
       display: flex; align-items: center; justify-content: space-between; gap: 12px;
@@ -54,14 +51,12 @@
     input:checked + .knob::after{left:23px}
 
     .wrap { max-width: 980px; margin: 0 auto; display: grid; gap: var(--gap); }
-
     .card {
       background: var(--card); border: 1px solid rgba(255,255,255,.08);
       border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px;
       min-width: 0;
     }
 
-    /* --- Tabs --- */
     .tabs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
     .tab {
       padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,.18);
@@ -73,7 +68,6 @@
     .panel { display: none; }
     .panel.active { display: block; }
 
-    /* --- 12-col grid that never overlaps --- */
     .grid {
       display: grid;
       gap: var(--gap);
@@ -93,13 +87,10 @@
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.18);
       outline: none;
-      min-width: 0; /* critical to prevent overflow in grid */
+      min-width: 0;
     }
     input:focus { box-shadow: var(--ring); border-color: transparent; }
-    /* prevent iOS auto-zoom crowding */
-    @supports (-webkit-touch-callout: none) {
-      input { font-size: 16px; }
-    }
+    @supports (-webkit-touch-callout: none) { input { font-size: 16px; } }
 
     .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
     .btn {
@@ -206,8 +197,8 @@
 
     <section class="card">
       <h3 style="margin:6px 0 8px">How it works</h3>
-      <p><b>Simple:</b> POST <code>/api/simple-interest</code> &nbsp; ← proxy → Mule &nbsp; <code>{ principal, rate, time }</code></p>
-      <p><b>Compound:</b> POST <code>/api/compound-interest</code> &nbsp; ← proxy → Mule &nbsp; <code>{ principal, rate, time, frequency }</code></p>
+      <p><b>Simple:</b> POST <code>/api/simple-interest</code> ← proxy → Mule <code>{ principal, rate, time }</code></p>
+      <p><b>Compound:</b> POST <code>/api/compound-interest</code> ← proxy → Mule <code>{ principal, rate, time, frequency }</code></p>
     </section>
 
     <div class="foot">
@@ -254,6 +245,7 @@
       const n = Number(v);
       return { ok: v !== "" && Number.isFinite(n), num: n, raw: v };
     }
+    const fmt = (v) => (v === null || v === undefined || Number.isNaN(Number(v))) ? "(n/a)" : String(v);
 
     // Simple Interest
     document.getElementById("calcSimple").addEventListener("click", async () => {
@@ -269,11 +261,10 @@
         const data = await res.json();
         if (!res.ok) return showText(outSimple, data.message || data.error || "Request failed", false);
 
-        // Render as friendly text
         if (data && typeof data === "object") {
-          const interest = data.interest ?? data.simpleInterest ?? data.si ?? "(n/a)";
-          const total = data.total ?? data.amount ?? "(n/a)";
-          showText(outSimple, `Simple Interest: ${interest}\nTotal Amount: ${total}`);
+          const interest = data.interest ?? data.simpleInterest ?? data.si ?? null;
+          const total = data.total ?? data.amount ?? null;
+          showText(outSimple, `Simple Interest: ${fmt(interest)}\nTotal Amount: ${fmt(total)}`);
         } else {
           showText(outSimple, String(data));
         }
@@ -300,14 +291,44 @@
         const data = await res.json();
         if (!res.ok) return showText(outCompound, data.message || data.error || "Request failed", false);
 
-        // Friendly text
+        // Robust result handling:
+        // 1) Try to read interest/amount from multiple possible keys
+        let interest = null, amount = null;
+
         if (data && typeof data === "object") {
-          const interest = data.interest ?? data.compoundInterest ?? "(n/a)";
-          const amount = data.amount ?? data.total ?? "(n/a)";
-          showText(outCompound, `Compound Interest: ${interest}\nFinal Amount: ${amount}\nFrequency: ${F.num} / year`);
-        } else {
-          showText(outCompound, String(data));
+          interest =
+            data.interest ??
+            data.compoundInterest ??
+            data.ci ??
+            data.interestAmount ??
+            null;
+
+          amount =
+            data.amount ??
+            data.totalAmount ??
+            data.finalAmount ??
+            data.maturityAmount ??
+            data.total ??
+            data.A ??
+            null;
         }
+
+        // 2) If amount is missing but interest exists, compute A = P + interest
+        if ((amount === null || amount === undefined) && (interest !== null && interest !== undefined)) {
+          const pNum = Number(P.num);
+          const iNum = Number(interest);
+          if (Number.isFinite(pNum) && Number.isFinite(iNum)) {
+            amount = pNum + iNum;
+          }
+        }
+
+        const lines = [
+          `Compound Interest: ${fmt(interest)}`,
+          `Final Amount: ${fmt(amount)}`,
+          `Frequency: ${F.num} / year`
+        ];
+        showText(outCompound, lines.join("\n"));
+
       } catch (e) {
         showText(outCompound, e.message, false);
       }
@@ -317,7 +338,6 @@
       showText(outCompound, "Cleared.");
     });
 
-    // Footer year
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 </body>
