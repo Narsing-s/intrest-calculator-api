@@ -1,48 +1,46 @@
-const express = require("express");
-const fetch = require("node-fetch");
+<!DOCTYPE html>
+<html>
+<head>
+<title>Interest Calculator</title>
+</head>
 
-const app = express();
+<body>
 
-app.use(express.json());
+<h2>Interest Calculator</h2>
 
-// serve frontend
-app.use(express.static("public"));
+<input id="principal" placeholder="Principal"><br><br>
+<input id="rate" placeholder="Rate"><br><br>
+<input id="time" placeholder="Time"><br><br>
 
-// root route
-app.get("/", (req, res) => {
-  res.send("Interest Calculator API Running 🚀");
-});
+<button onclick="calculate()">Calculate</button>
 
-const SIMPLE_API =
-  "https://intrest-calculator-api-jik9pb.5sc6y6-4.usa-e2.cloudhub.io/api/simple-interest";
+<pre id="result"></pre>
 
-const COMPOUND_API =
-  "https://intrest-calculator-api-jik9pb.5sc6y6-4.usa-e2.cloudhub.io/api/compound-interest";
+<script>
 
-app.post("/simple-interest", async (req, res) => {
-  const response = await fetch(SIMPLE_API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(req.body),
-  });
+async function calculate(){
 
-  const data = await response.json();
-  res.json(data);
-});
+let data={
+principal:Number(document.getElementById("principal").value),
+rate:Number(document.getElementById("rate").value),
+time:Number(document.getElementById("time").value)
+}
 
-app.post("/compound-interest", async (req, res) => {
-  const response = await fetch(COMPOUND_API, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(req.body),
-  });
+let res=await fetch("/simple-interest",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify(data)
+})
 
-  const data = await response.json();
-  res.json(data);
-});
+let result=await res.json()
 
-const PORT = process.env.PORT || 3000;
+document.getElementById("result").innerText=JSON.stringify(result,null,2)
 
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
+}
+
+</script>
+
+</body>
+</html>
