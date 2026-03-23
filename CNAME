@@ -1,1 +1,3 @@
-intrest-calculator-api.vercel.app
+Type: CNAME
+Name: intrest-calculator-api
+Value: narsing-s.github.io
