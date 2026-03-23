@@ -23,13 +23,11 @@ Debug‑friendly for developers
 
 Voice Input (Speech‑to‑Text) per field
 Voice Output (Text‑to‑Speech) for results
-Supports EN / HI / TE voices (Chrome recommended)
+Supports EN  (Chrome recommended)
 
 # 🌐 Multilingual UI
 
 # English
-Hindi (हिन्दी)
-Telugu (తెలుగు)
 Full UI text changes instantly
 
 # 🎨 Android‑Style UI
@@ -39,12 +37,6 @@ Clean grid layout (12‑column, fully responsive)
 Non‑overlapping form fields
 Mobile‑first design
 
-# 📱 PWA Support
-
-Installable on Chrome (Android/Desktop)
-App icon + splash screen
-Offline shell support (via Service Worker)
-Works like a native app
 
 # ⚙️ Settings Panel
 
