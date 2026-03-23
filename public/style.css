@@ -1,90 +1,89 @@
-:root {
-  --bg: #0b1020; --bg2: #0e1530; --card: #121a2f; --text: #eef3ff; --muted: #9aa7cc;
-  --accent: #4ae387; --accent2: #5aa1ff; --danger: #ff7a7a;
-  --ring: 0 0 0 3px rgba(74, 227, 135, .25);
-  --shadow: 0 20px 40px rgba(0,0,0,.45);
-  --radius: 16px; --radius-sm: 12px;
-}
-[data-theme="light"] {
-  --bg: #eef2ff; --bg2:#f7f9ff; --card:#fff; --text:#0e1440; --muted:#5a648a;
-  --accent:#2fb171; --accent2:#2a62ff; --danger:#d93025;
-  --shadow: 0 16px 32px rgba(0,0,0,.08); --ring: 0 0 0 3px rgba(42,98,255,.18);
-}
+/* ================== ANIMATIONS (ADDED) ================== */
 
-* { box-sizing: border-box; }
-html, body { height: 100%; }
+/* Fade-in for page */
 body {
-  margin: 0; color: var(--text);
-  background:
-    radial-gradient(1100px 600px at -10% -30%, #1b2b65 0%, transparent 55%),
-    radial-gradient(800px 500px at 110% -10%, #142b52 0%, transparent 55%),
-    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-  font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans";
-  -webkit-font-smoothing: antialiased;
-  padding: 16px;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-.appbar {
-  max-width: 980px; margin: 0 auto 16px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.brand { display: flex; align-items: center; gap: 12px; }
-.logo { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 6px 16px rgba(0,0,0,.25); }
-.brand h1 { margin: 0; font-size: 20px; }
-.brand small { color: var(--muted); }
 
-.theme-toggle { display:inline-flex; align-items:center; gap:10px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); cursor:pointer }
-.theme-toggle input { display: none; }
-.knob { width:44px; height:24px; border-radius:999px; background:#172048; border:1px solid rgba(255,255,255,.16); position:relative; }
-.knob::after { content:""; position:absolute; top:50%; left:3px; transform:translateY(-50%); width:18px; height:18px; border-radius:50%; background:var(--accent); transition:left .22s ease; box-shadow:0 2px 10px rgba(0,0,0,.25); }
-input:checked + .knob::after { left: 23px; }
-
-.wrap { max-width: 980px; margin: 0 auto; display: grid; gap: 16px; }
-
+/* Card hover animation */
 .card {
-  background: var(--card); border: 1px solid rgba(255,255,255,.08);
-  border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 30px 60px rgba(0,0,0,.6);
 }
 
-.mode-tabs { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
-.tab {
-  padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.06); color: var(--text); cursor:pointer;
-}
-.tab.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); border:none; color:#081226; }
-
-.panel { display: none; }
-.panel.active { display: block; }
-
-.grid-3 { display: grid; gap: 12px; grid-template-columns: repeat(12, 1fr); }
-.grid-3 > .field { grid-column: span 4; }
-@media (max-width: 860px) { .grid-3 > .field { grid-column: span 12; } }
-
-.field label { display:block; font-size:12px; color: var(--muted); margin-bottom: 6px; }
-.field input {
-  width: 100%; padding: 12px 14px; border-radius: 10px; color: var(--text);
-  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18); outline:none;
-}
-.field input:focus { box-shadow: var(--ring); border-color: transparent; }
-
-.actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+/* Button hover + click effect */
 .btn {
-  padding: 10px 14px; border-radius: 12px; font-weight: 700;
-  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: var(--text);
-  cursor: pointer;
+  transition: all 0.25s ease;
 }
-.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); border:none; color:#081226; }
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,.3);
+}
+.btn:active {
+  transform: scale(0.96);
+}
 
+/* Input focus animation */
+.field input {
+  transition: all 0.25s ease;
+}
+.field input:hover {
+  transform: scale(1.01);
+}
+
+/* Tab switching animation */
+.tab {
+  transition: all 0.3s ease;
+}
+.tab:hover {
+  transform: translateY(-2px);
+}
+
+/* Panel smooth fade */
+.panel {
+  animation: fadePanel 0.4s ease;
+}
+@keyframes fadePanel {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Logo animation (floating effect) */
+.logo {
+  animation: floatLogo 3s ease-in-out infinite;
+}
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Theme toggle smooth */
+.knob::after {
+  transition: all 0.25s ease;
+}
+
+/* Result reveal animation */
 .result {
-  margin-top: 12px; border: 1px dashed rgba(255,255,255,.16);
-  background: rgba(255,255,255,.04); border-radius: 12px; padding: 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  white-space: pre-wrap; word-break: break-word;
+  animation: resultFade 0.5s ease;
 }
-.result.err { color: var(--danger); border-color: rgba(255,0,0,.25); background: rgba(255,0,0,.06); }
+@keyframes resultFade {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
 
-.watermark{
-  position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: 12px; color: var(--muted); font-size: 12px; text-decoration: none; opacity: .9;
+/* Watermark subtle float */
+.watermark {
+  animation: floatWatermark 4s ease-in-out infinite;
 }
-.watermark:hover { text-decoration: underline; }
+@keyframes floatWatermark {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-4px); }
+}
