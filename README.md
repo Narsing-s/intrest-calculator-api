@@ -1,4 +1,4 @@
-# 📘 Interest Calculator UI — Simple & Compound Interest (PWA)
+# 📘 Interest Calculator UI — Simple & Compound Interest
 Interest Calculator UI is a fast, Android‑style, mobile‑friendly web app for calculating Simple Interest and Compound Interest, featuring JSON result panels, voice input & speech output, language selection (English, Hindi, Telugu), dark/light theme, and PWA install support (Add to Home Screen).
 The app communicates with a MuleSoft backend through a Node.js proxy to avoid CORS issues and ensure safe, seamless integration.
 
