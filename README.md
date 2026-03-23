@@ -23,7 +23,7 @@ Debug‑friendly for developers
 
 Voice Input (Speech‑to‑Text) per field
 Voice Output (Text‑to‑Speech) for results
-Supports EN  (Chrome recommended)
+Supports EN /TL (Chrome recommended)
 
 # 🌐 Multilingual UI
 
