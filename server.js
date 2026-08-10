@@ -10,11 +10,11 @@ const PORT = process.env.PORT || 3000;
 // Mule API endpoints (override via env if needed)
 const SIMPLE_API =
   process.env.SIMPLE_API ||
-  "https://intrest-calculator-api-jik9pb.5sc6y6-4.usa-e2.cloudhub.io/api/simple-interest";
+  "https://intrest-calculator-api-tlpwq.5sc6y6-4.usa-e2.cloudhub.io/api/simple-interest";
 
 const COMPOUND_API =
   process.env.COMPOUND_API ||
-  "https://intrest-calculator-api-jik9pb.5sc6y6-4.usa-e2.cloudhub.io/api/compound-interest";
+  "https://intrest-calculator-api-tlpwq.5sc6y6-4.usa-e2.cloudhub.io/api/compound-interest";
 
 // Diagnostics
 app.use((req, res, next) => {
